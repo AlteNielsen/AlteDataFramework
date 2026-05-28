@@ -126,22 +126,15 @@ namespace Alte.Data.Core
             return JsonUtility.FromJson<T>(json);
         }
 
-        protected static string[] LoadCSVAll(string path)
+        protected static void LoadCSV(string path, List<string[]> csvData)
         {
-            using StreamReader reader = new StreamReader(path, Encoding.UTF8);
-            return reader.ReadToEnd().Split(',');
-        }
-
-        protected static string[] LoadCSVVertical(string path, int index)
-        {
-            using StreamReader reader = new StreamReader(path, Encoding.UTF8);
-            int num = int.Parse(reader.ReadLine());
-            string[] result = new string[num];
-            for (int i = 0; i < num; i++)
+            string[] lines = File.ReadAllLines(path);
+            for(int i = 0; i < lines.Length; i++)
             {
-                result[i] = reader.ReadLine().Split(',')[index];
+                if(string.IsNullOrEmpty(lines[i])) continue;
+                string[] words = lines[i].Split(',');
+                csvData.Add(words);
             }
-            return result;
         }
     }
 }
