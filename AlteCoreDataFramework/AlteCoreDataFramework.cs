@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine.LightTransport;
 
 namespace Alte.Data.Core
 {
@@ -166,6 +167,23 @@ namespace Alte.Data.Core
             }
         }
 
+        public ReadOnlySpan<char> Char
+        {
+            get
+            {
+                ReadOnlySpan<int> rawdata = AlteCoreDataFramework.Instance.GetData(this);
+                ReadOnlySpan<char> data = MemoryMarshal.Cast<int, char>(rawdata);
+                if (data[data.Length - 1] == '\0')
+                {
+                    return data.Slice(0, data.Length - 1);
+                }
+                else
+                {
+                    return data;
+                }
+            }
+        }
+
         public void Set(Span<int> value)
         {
             AlteCoreDataFramework.Instance.SetIntData(this, value);
@@ -181,6 +199,30 @@ namespace Alte.Data.Core
         {
             AlteCoreDataFramework.Instance.SetIntData(this, value.flags);
 
+        }
+
+        public void Set(string value)
+        {
+            Span<char> data = stackalloc char[value.Length];
+            value.AsSpan().CopyTo(data);
+            Set(data);
+        }
+
+        public void Set(Span<char> value)
+        {
+            if (value.Length % 2 == 0)
+            {
+                ReadOnlySpan<int> rawdata = MemoryMarshal.Cast<char, int>(value);
+                AlteCoreDataFramework.Instance.SetIntData(this, rawdata);
+            }
+            else
+            {
+                Span<char> original = stackalloc char[value.Length + 1];
+                value.CopyTo(original);
+                original[original.Length - 1] = '\0';
+                ReadOnlySpan<int> rawdata = MemoryMarshal.Cast<char, int>(original);
+                AlteCoreDataFramework.Instance.SetIntData(this, rawdata);
+            }
         }
 
         public void CopyTo(DataPointer destination)
