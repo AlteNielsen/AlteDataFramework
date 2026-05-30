@@ -30,33 +30,44 @@ namespace Alte.Data.Text
             return Path.Combine(folderPath, "data.dat");
         }
 
-        private static string GetMasterChunkNumFilePath(int lang)
+        private static string GetMasterChunkNumFilePath()
         {
-            return Path.Combine(masterFolderPath, "chunknum" + lang + ".dat");
+            return Path.Combine(masterFolderPath, "chunknum.dat");
         }
 
-        private static string GetSceneChunkNumFilePath(int lang)
+        private static string GetSceneNumFilePath()
         {
-            return Path.Combine(sceneFolderPath, "chunknum" + lang + ".dat");
+            return Path.Combine(sceneFolderPath, "scenenum.dat");
         }
 
-        private static void LoadMasterTexts(int lang)
+        private static string GetSceneChunkNumFilePath()
         {
-            int chunknum = GetMasterChunkNum(lang);
-            Span<int> chunkOffsets = new int[chunknum + 1];
+            return Path.Combine(sceneFolderPath, "chunknum.dat");
+        }
+
+        private static void SetupFramework(int lang)
+        {
+            int masterchunknum = GetMasterChunkNum();
+            Span<int> chunkOffsets = new int[masterchunknum + 1];// 1
             chunkOffsets[0] = 0;
             GetMasterChunkOffsets(chunkOffsets, lang);
-            Span<int> dataOffsets = new int[chunkOffsets[chunkOffsets.Length - 1] + 1];
+            Span<int> dataOffsets = new int[chunkOffsets[chunkOffsets.Length - 1] + 1];// 2
             dataOffsets[0] = 0;
             GetMasterDataOffsets(dataOffsets, chunkOffsets, lang);
-            Span<char> data = new char[dataOffsets[dataOffsets.Length - 1]];
+            Span<char> data = new char[dataOffsets[dataOffsets.Length - 1]];// 3
             GetMasterData(data, dataOffsets, chunkOffsets, lang);
+            //-------------------------------------------------
+            int scenenum = GetSceneNum();
+            int scenechunknum = GetSceneChunkNum();// 4
+            int maxDataOffsetLength = GetSceneMaxDataOffsetLength(scenenum, scenechunknum, lang);// 5
+            int maxDataLength = GetSceneMaxDataLength(scenenum, scenechunknum, lang);// 6
+            new AlteTextDataFramework(chunkOffsets, dataOffsets, data, scenechunknum, maxDataOffsetLength, maxDataLength);
         }
 
-        private static int GetMasterChunkNum(int lang)
+        private static int GetMasterChunkNum()
         {
             Span<int> data = stackalloc int[1];
-            AlteTextDataInput.BinaryReader(GetMasterChunkNumFilePath(lang), data);
+            AlteTextDataInput.BinaryReader(GetMasterChunkNumFilePath(), data);
             return data[0];
         }
 
@@ -95,6 +106,79 @@ namespace Alte.Data.Text
                 int end = dataOffsets[chunkOffsets[i + 1]];
                 AlteTextDataInput.BinaryReader(file, result.Slice(start, end - start));
             }
+        }
+
+        private static int GetSceneNum()
+        {
+            Span<int> data = stackalloc int[1];
+            AlteTextDataInput.BinaryReader(GetSceneNumFilePath(), data);
+            return data[0];
+        }
+
+        private static int GetSceneChunkNum()
+        {
+            Span<int> data = stackalloc int[1];
+            AlteTextDataInput.BinaryReader(GetSceneChunkNumFilePath(), data);
+            return data[0];
+        }
+
+        private static int GetSceneMaxDataOffsetLength(int scenenum, int chunknum, int lang)
+        {
+            Span<int> sums = stackalloc int[scenenum];
+            for (int i = 0; i < scenenum; i++)
+            {
+                int sceneSum = 0;
+                for (int j = 0; j < chunknum; j++)
+                {
+                    string folder = GetSceneChunkFolderPath(i, j, lang);
+                    string file = GetLengthFilePath(folder);
+                    sceneSum += AlteTextDataInput.BinaryLength(file);
+                }
+                sums[i] = sceneSum;
+            }
+            return GetMaxValue(sums);
+        }
+
+        private static int GetSceneMaxDataLength(int scenenum, int chunknum, int lang)
+        {
+            Span<int> sums = stackalloc int[scenenum];
+            for (int i = 0; i < scenenum; i++)
+            {
+                int sceneSum = 0;
+                for (int j = 0; j < chunknum; j++)
+                {
+                    string folder = GetSceneChunkFolderPath(i, j, lang);
+                    string file = GetLengthFilePath(folder);
+                    Span<int> chunkdata = stackalloc int[AlteTextDataInput.BinaryLength(file)];
+                    AlteTextDataInput.BinaryReader(file, chunkdata);
+                    sceneSum += GetSum(chunkdata);
+                }
+                sums[i] = sceneSum;
+            }
+            return GetMaxValue(sums);
+        }
+
+        private static int GetMaxValue(Span<int> target)
+        {
+            int result = target[0];
+            for (int i = 1; i < target.Length; i++)
+            {
+                if (result < target[i])
+                {
+                    result = target[i];
+                }
+            }
+            return result;
+        }
+
+        private static int GetSum(Span<int> target)
+        {
+            int result = 0;
+            for(int i = 0; i < target.Length; i++)
+            {
+                result += target[i];
+            }
+            return result;
         }
     }
 
