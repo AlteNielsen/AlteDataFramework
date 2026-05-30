@@ -26,7 +26,7 @@ namespace Alte.Data.Text
             sceneChunkOffsets = new int[maxSceneChunkOffsetDataLength];
         }
 
-        public void SetSceneData(Span<int> offsetData, Span<char> sceneData, Span<int> chunkOffsetData)
+        public void SetSceneData(Span<int> chunkOffsetData, Span<int> offsetData, Span<char> sceneData)
         {
             sceneOffsets.AsSpan().Clear();
             offsetData.CopyTo(sceneOffsets.AsSpan());
