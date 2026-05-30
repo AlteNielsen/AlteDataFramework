@@ -49,14 +49,14 @@ namespace Alte.Data.Core
             int master = AlteCoreFileInput.BinaryReader(masterArrayLengthFilePath, null, false);
             int save = AlteCoreFileInput.BinaryReader(saveArrayLengthFilePath, null, false);
             chunkOffsets = new int[master + save + 1];
-            Span<int> lengtes = stackalloc int[master + save];
+            Span<int> lengthes = stackalloc int[master + save];
             border = master;
-            AlteCoreFileInput.BinaryReader(masterArrayLengthFilePath, lengtes.Slice(0, master - 1), false);
-            AlteCoreFileInput.BinaryReader(saveArrayLengthFilePath, lengtes.Slice(master, save), false);
+            AlteCoreFileInput.BinaryReader(masterArrayLengthFilePath, lengthes.Slice(0, master - 1), false);
+            AlteCoreFileInput.BinaryReader(saveArrayLengthFilePath, lengthes.Slice(master, save), false);
             chunkOffsets[0] = 0;
             for(int i = 1; i < chunkOffsets.Length; i++)
             {
-                chunkOffsets[i] = chunkOffsets[i - 1] + lengtes[i - 1];
+                chunkOffsets[i] = chunkOffsets[i - 1] + lengthes[i - 1];
             }
             allData = new int[chunkOffsets[chunkOffsets.Length - 1]];
 
