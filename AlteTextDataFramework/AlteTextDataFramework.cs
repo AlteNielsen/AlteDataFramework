@@ -12,7 +12,7 @@ namespace Alte.Data.Text
         private int[] masterChunkOffsets;
         private int[] sceneChunkOffsets;
 
-        public AlteTextDataFramework(Span<int> masterOffsetData, int maxSceneDataLength, int maxSceneOffsetDataLength, Span<char> masterData, Span<int> masterChunkOffsetData, int maxSceneChunkOffsetDataLength)
+        public AlteTextDataFramework(Span<int> masterChunkOffsetData, Span<int> masterOffsetData, Span<char> masterData, int maxSceneChunkOffsetDataLength, int maxSceneOffsetDataLength, int maxSceneDataLength)
         {
             Instance = this;
             masterOffsets = new int[masterOffsetData.Length];

@@ -7,12 +7,12 @@ namespace Alte.Data.Core
 {
     public static class AlteCoreDataIO
     {
-        public static readonly string masterArrayLengthFilePath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Master", "leg,dat");
-        public static readonly string masterFolderPath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Master");
+        public static readonly string masterArrayLengthFilePath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Core", "Master", "leg,dat");
+        public static readonly string masterFolderPath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Core", "Master");
 
-        public static readonly string saveArrayLengthFilePath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Save", "leg,dat");
-        private static readonly string saveFolderPath = Path.Combine(Application.persistentDataPath, "AlteDataFramework", "Save", "Save");
-        public static readonly string originalSaveFolderPath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Save", "Original");
+        public static readonly string saveArrayLengthFilePath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Core", "Save", "leg,dat");
+        private static readonly string saveFolderPath = Path.Combine(Application.persistentDataPath, "AlteDataFramework", "Core", "Save", "Save");
+        public static readonly string originalSaveFolderPath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Core", "Save", "Original");
 
         private const int SaveSlotNum = 0;
         private static int[] chunkOffsets;
