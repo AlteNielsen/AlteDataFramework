@@ -11,7 +11,8 @@ namespace Alte.Data.Text
         private int border;
         private int[] masterChunkOffsets;
         private int[] sceneChunkOffsets;
-        public int language;
+        public int Language { get; private set; }
+        public int Scene { get; private set; }
 
         public AlteTextDataFramework(Span<int> masterChunkOffsetData, Span<int> masterOffsetData, Span<char> masterData, int maxSceneChunkOffsetDataLength, int maxSceneOffsetDataLength, int maxSceneDataLength, int lang)
         {
@@ -26,10 +27,10 @@ namespace Alte.Data.Text
             masterChunkOffsets = new int[masterChunkOffsetData.Length];
             masterChunkOffsetData.CopyTo(masterChunkOffsets.AsSpan());
             sceneChunkOffsets = new int[maxSceneChunkOffsetDataLength];
-            language = lang;
+            Language = lang;
         }
 
-        public void SetSceneData(Span<int> chunkOffsetData, Span<int> offsetData, Span<char> sceneData)
+        public void SetSceneData(Span<int> chunkOffsetData, Span<int> offsetData, Span<char> sceneData, int scene)
         {
             sceneOffsets.AsSpan().Clear();
             offsetData.CopyTo(sceneOffsets.AsSpan());
@@ -37,6 +38,7 @@ namespace Alte.Data.Text
             sceneData.CopyTo(buffer.AsSpan(border, buffer.Length - border));
             sceneChunkOffsets.AsSpan().Clear();
             chunkOffsetData.CopyTo(sceneChunkOffsets.AsSpan());
+            this.Scene = scene;
         }
 
         public ReadOnlySpan<char> GetText(TextPointer pointer)
