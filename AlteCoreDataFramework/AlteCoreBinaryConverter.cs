@@ -7,12 +7,12 @@ using System.Runtime.InteropServices;
 
 namespace Alte.Data.Core
 {
-    public class AlteBinaryConverter
+    public class AlteCoreBinaryConverter
     {
-        public static AlteBinaryConverter Instance;
+        public static AlteCoreBinaryConverter Instance;
         private List<int>[] datas;
 
-        public AlteBinaryConverter()
+        public AlteCoreBinaryConverter()
         {
             if (Instance != null) return;
             Instance = this;

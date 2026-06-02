@@ -23,8 +23,8 @@ namespace Alte.Data.Core
         public static void CleanLoad(int savedataSlotNum)
         {
             #if UNITY_EDITOR
-            new AlteBinaryConverter();
-            AlteBinaryConverter.Instance = null;
+            new AlteCoreBinaryConverter();
+            AlteCoreBinaryConverter.Instance = null;
             #endif
             Load(savedataSlotNum);
         }
