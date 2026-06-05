@@ -10,32 +10,27 @@ namespace Alte.Data.Core
     public class AlteCoreBinaryConverter
     {
         public static AlteCoreBinaryConverter Instance;
-        private List<int>[] datas;
+        private int[][] datas;
 
         public AlteCoreBinaryConverter()
         {
             if (Instance != null) return;
             Instance = this;
-            datas = new List<int>[(int)DataChunk.Count];
+            datas = new int[(int)DataChunk.Count][];
             DataChunkRegistry();
             DataConvert();
         }
 
-        public void SetData<T>(DataChunk chunk, List<T> data) where T : struct 
+        public void SetData<T>(DataChunk chunk, Span<T> data) where T : struct 
         {
-            Span<T> dataSpan = new T[data.Count];
-            for(int i = 0; i < data.Count; i++)
-            {
-                dataSpan[i] = data[i];
-            }
-            Span<int> rawdata = MemoryMarshal.Cast<T, int>(dataSpan);
-            datas[(int)chunk].AddRange(rawdata.ToArray());
+            Span<int> rawdata = MemoryMarshal.Cast<T, int>(data);
+            datas[(int)chunk] = rawdata.ToArray();
         }
 
         private void Register<T, U>() where T : AlteNormalDataChunk<U>, new() where U : struct
         {
             var (chunk, data) = new T().Load();
-            SetData(chunk, data);
+            SetData(chunk, data.AsSpan());
         }
 
         private void DataConvert()
@@ -60,7 +55,7 @@ namespace Alte.Data.Core
             Span<int> leg = stackalloc int[border];
             for(int i = 0;i < border; i++)
             {
-                leg[i] = datas[i].Count;
+                leg[i] = datas[i].Length;
             }
             WriteBinary(AlteCoreDataIO.masterArrayLengthFilePath, leg);
         }
@@ -69,7 +64,7 @@ namespace Alte.Data.Core
         {
             for(int i = 0; i < border; i++)
             {
-                WriteBinary(AlteCoreDataIO.GetMasterDataFilePath(i), datas[i].ToArray());
+                WriteBinary(AlteCoreDataIO.GetMasterDataFilePath(i), datas[i]);
             }
         }
 
@@ -78,7 +73,7 @@ namespace Alte.Data.Core
             Span<int> leg = stackalloc int[datas.Length - border];
             for (int i = border; i < datas.Length; i++)
             {
-                leg[i - border] = datas[i].Count;
+                leg[i - border] = datas[i].Length;
             }
             WriteBinary(AlteCoreDataIO.saveArrayLengthFilePath, leg);
         }
@@ -87,7 +82,7 @@ namespace Alte.Data.Core
         {
             for (int i = border; i < datas.Length; i++)
             {
-                WriteBinary(AlteCoreDataIO.GetOriginalSaveDataFilePath(i), datas[i].ToArray());
+                WriteBinary(AlteCoreDataIO.GetOriginalSaveDataFilePath(i), datas[i]);
             }
         }
 
@@ -112,7 +107,7 @@ namespace Alte.Data.Core
 
     public abstract class AlteNormalDataChunk<U> where U : struct
     {
-        public abstract (DataChunk chunk, List<U> data) Load();
+        public abstract (DataChunk chunk, U[] data) Load();
 
         protected static T LoadJSON<T>(string path)
         {
