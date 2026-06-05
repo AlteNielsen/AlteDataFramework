@@ -17,8 +17,7 @@ namespace Alte.Data.Core
             if (Instance != null) return;
             Instance = this;
             datas = new List<int>[(int)DataChunk.Count];
-            MasterDataChunkRegistry();
-            SaveDataChunkRegistry();
+            DataChunkRegistry();
             DataConvert();
         }
 
@@ -33,9 +32,10 @@ namespace Alte.Data.Core
             datas[(int)chunk].AddRange(rawdata.ToArray());
         }
 
-        private void Register<T>() where T : AlteNormalDataChunk, new()
+        private void Register<T, U>() where T : AlteNormalDataChunk<U>, new() where U : struct
         {
-            new T().Load();
+            var (chunk, data) = new T().Load();
+            SetData(chunk, data);
         }
 
         private void DataConvert()
@@ -99,12 +99,7 @@ namespace Alte.Data.Core
             }
         }
 
-        private void MasterDataChunkRegistry()//ユーザーさん自身が直接書き込んでください。例 → Register<TestDataChunk>();
-        {
-
-        }
-
-        private void SaveDataChunkRegistry()//ユーザーさん自身が直接書き込んでください。例 → Register<TestDataChunk>();
+        private void DataChunkRegistry()//ユーザーさん自身が直接書き込んでください。例 → Register<TestDataChunk, int>();
         {
 
         }
@@ -115,9 +110,9 @@ namespace Alte.Data.Core
         }
     }
 
-    public abstract class AlteNormalDataChunk
+    public abstract class AlteNormalDataChunk<U> where U : struct
     {
-        public abstract void Load();
+        public abstract (DataChunk chunk, List<U> data) Load();
 
         protected static T LoadJSON<T>(string path)
         {
