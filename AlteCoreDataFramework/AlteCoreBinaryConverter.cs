@@ -78,7 +78,7 @@ namespace Alte.Data.Core
             Span<int> leg = stackalloc int[datas.Length - border];
             for (int i = border; i < datas.Length; i++)
             {
-                leg[i] = datas[i].Count;
+                leg[i - border] = datas[i].Count;
             }
             WriteBinary(AlteCoreDataIO.saveArrayLengthFilePath, leg);
         }
