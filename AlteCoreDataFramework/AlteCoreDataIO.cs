@@ -155,17 +155,17 @@ namespace Alte.Data.Core
 
         public static string GetMasterDataFilePath(int chunk)
         {
-            return Path.Combine(masterFolderPath, "md" + chunk + ".dat");
+            return Path.Combine(masterFolderPath, "md" + ((DataChunk)chunk).ToString() + ".dat");
         }
 
         private static string GetSaveDataFilePath(int slotIndex, int chunk)
         {
-            return Path.Combine(saveFolderPath + slotIndex, "sd" + (chunk - border) + ".dat");
+            return Path.Combine(saveFolderPath + slotIndex, "sd" + ((DataChunk)chunk).ToString() + ".dat");
         }
 
         public static string GetOriginalSaveDataFilePath(int chunk)
         {
-            return Path.Combine(originalSaveFolderPath, "sd" + (chunk - border) + ".dat");
+            return Path.Combine(originalSaveFolderPath, "sd" + ((DataChunk)chunk).ToString() + ".dat");
         }
     }
 
