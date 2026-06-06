@@ -10,7 +10,7 @@ namespace Alte.Data.Text
     {
         private static readonly string rootFolderPath = Path.Combine(Application.streamingAssetsPath, "AlteDataFramework", "Text");
 
-        private static string GetFilePath(int lang, int scene, FileKinds kinds)
+        public static string GetFilePath(int lang, int scene, FileKinds kinds)
         {
             string s = string.Empty;
             if(scene < 0)
@@ -19,27 +19,31 @@ namespace Alte.Data.Text
             }
             else
             {
-                s = "Scene" + scene;
+                s = ((TextScene)scene).ToString();
             }
 
             switch (kinds)
             {
                 case FileKinds.Lang:
-                    return Path.Combine(rootFolderPath, "Lang" + lang, "lang.dat");//最大シーンチャンク数・最大シーンチャンク内string個数・最大シーンcharデータ数
+                    return Path.Combine(rootFolderPath, "Lang" + ((TextLanguage)lang).ToString(), "lang.dat");//最大シーンチャンク数・最大シーンチャンク内string個数・最大シーンcharデータ数
                 case FileKinds.Scene:
-                    return Path.Combine(rootFolderPath, "Lang" + lang, s, "scene.dat");//シーン単位(チャンク個数)
+                    return Path.Combine(rootFolderPath, "Lang" + ((TextLanguage)lang).ToString(), s, "scene.dat");//シーン単位(チャンク個数)
                 case FileKinds.Chunk:
-                    return Path.Combine(rootFolderPath, "Lang" + lang, s, "chunk.dat");//チャンク単位(string個数)
+                    return Path.Combine(rootFolderPath, "Lang" + ((TextLanguage)lang).ToString(), s, "chunk.dat");//チャンク単位(string個数)
                 case FileKinds.Offsets:
-                    return Path.Combine(rootFolderPath, "Lang" + lang, s, "offsets.dat");//string単位(char個数)
+                    return Path.Combine(rootFolderPath, "Lang" + ((TextLanguage)lang).ToString(), s, "offsets.dat");//string単位(char個数)
                 case FileKinds.Data:
-                    return Path.Combine(rootFolderPath, "Lang" + lang, s, "data.dat");//char単位(char単体)
+                    return Path.Combine(rootFolderPath, "Lang" + ((TextLanguage)lang).ToString(), s, "data.dat");//char単位(char単体)
             }
             return null;
         }
 
         public static void Initialize(int lang)
         {
+            #if UNITY_EDITOR
+                new AlteTextBinaryConverter();
+                AlteTextBinaryConverter.Instance = null;
+            #endif
             SceneDataStruct data = LoadSceneData(lang, -1);
             try
             {
@@ -90,7 +94,7 @@ namespace Alte.Data.Text
             return new SceneDataStruct(Chunk, chunkLength, Offset, offsetLength, Data, dataLength);
         }
 
-        private enum FileKinds
+        public enum FileKinds
         {
             Lang,
             Scene,

@@ -98,4 +98,14 @@ namespace Alte.Data.Text
             }
         }
     }
+
+    public enum TextLanguage
+    {
+        Count//TextLanguageの総数を調べるためのものにつき、書き換え不可。要素を追加したいときはこれより前に追加してください
+    }
+
+    public enum TextScene
+    {
+        Count//TextSceneの総数を調べるためのものにつき、書き換え不可。要素を追加したいときはこれより前に追加してください
+    }
 }
