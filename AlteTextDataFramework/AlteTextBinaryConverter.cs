@@ -9,18 +9,21 @@ namespace Alte.Data.Text
     {
         public static AlteTextBinaryConverter Instance;
         private SceneTextData[,] datas;
+        private SceneTextData[] masterData;
 
         public AlteTextBinaryConverter()
         {
             if (Instance != null) return;
             Instance = this;
             datas = new SceneTextData[(int)TextLanguage.Count, (int)TextScene.Count];
+            masterData = new SceneTextData[(int)TextLanguage.Count];
             for(int i = 0; i < (int)TextLanguage.Count; i++)
             {
                 for(int j = 0; j < (int)TextScene.Count; j++)
                 {
                     datas[i, j] = new SceneTextData(i, j, GetScenePath(i, j));
                 }
+                masterData[i] = new SceneTextData(i, -1, GetMasterPath(i));
             }
             DataConvert();
         }
@@ -39,11 +42,17 @@ namespace Alte.Data.Text
                     int stringNum = WriteChunk(data, chunkNum);
                     int charNum = WriteOffset(data, stringNum);
                     WriteChar(data, charNum);
-                    maxChunkNum = GetBiggerNum(maxChunkNum, charNum);
+                    maxChunkNum = GetBiggerNum(maxChunkNum, chunkNum);
                     maxStringNum = GetBiggerNum(maxStringNum, stringNum);
                     maxCharNum = GetBiggerNum(maxCharNum, charNum);
                 }
                 WriteLang(i, maxChunkNum, maxStringNum, maxCharNum);
+
+                SceneTextData mdata = masterData[i];
+                int mchunkNum = WriteScene(mdata);
+                int mstringNum = WriteChunk(mdata, mchunkNum);
+                int mcharNum = WriteOffset(mdata, mstringNum);
+                WriteChar(mdata, mcharNum);
             }
         }
 
@@ -114,6 +123,11 @@ namespace Alte.Data.Text
             {
                 return b;
             }
+        }
+
+        private Span<string> GetMasterPath(int lang)
+        {
+            return null;//マスターのパスの配列を戻す必要があります。ご自身で適切な形で書き換えてください。
         }
 
         private Span<string> GetScenePath(int lang, int scene)

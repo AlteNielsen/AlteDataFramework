@@ -38,18 +38,18 @@ namespace Alte.Data.Text
             return null;
         }
 
-        public static void Initialize(int lang)
+        public static void Initialize(TextLanguage lang)
         {
             #if UNITY_EDITOR
                 new AlteTextBinaryConverter();
                 AlteTextBinaryConverter.Instance = null;
             #endif
-            SceneDataStruct data = LoadSceneData(lang, -1);
+            SceneDataStruct data = LoadSceneData((int)lang, -1);
             try
             {
                 Span<int> scenedata = stackalloc int[3];
-                AlteTextDataInput.BinaryReader(GetFilePath(lang, 0, FileKinds.Lang), scenedata);
-                new AlteTextDataFramework(data.Chunk, data.Offset, data.Data, scenedata[0] + 1, scenedata[1] + 1, scenedata[2], lang);
+                AlteTextDataInput.BinaryReader(GetFilePath((int)lang, 0, FileKinds.Lang), scenedata);
+                new AlteTextDataFramework(data.Chunk, data.Offset, data.Data, scenedata[0] + 1, scenedata[1] + 1, scenedata[2], (int)lang);
             }
             finally
             {
@@ -70,7 +70,7 @@ namespace Alte.Data.Text
             }
         }
 
-        public static void ReloadLanguage(int lang)
+        public static void ReloadLanguage(TextLanguage lang)
         {
             TextScene scene = AlteTextDataFramework.Instance.Scene;
             Initialize(lang);
