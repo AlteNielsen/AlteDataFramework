@@ -57,9 +57,9 @@ namespace Alte.Data.Text
             }
         }
 
-        public static void LoadScene(int scene)
+        public static void LoadScene(TextScene scene)
         {
-            SceneDataStruct data = LoadSceneData(AlteTextDataFramework.Instance.Language, scene);
+            SceneDataStruct data = LoadSceneData(AlteTextDataFramework.Instance.Language, (int)scene);
             try
             {
                 AlteTextDataFramework.Instance.SetSceneData(data.Chunk, data.Offset, data.Data, scene);
@@ -72,7 +72,7 @@ namespace Alte.Data.Text
 
         public static void ReloadLanguage(int lang)
         {
-            int scene = AlteTextDataFramework.Instance.Scene;
+            TextScene scene = AlteTextDataFramework.Instance.Scene;
             Initialize(lang);
             LoadScene(scene);
         }
